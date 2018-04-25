@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 
 /**
  * Description:
@@ -56,5 +57,10 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static float keepTwoBit(float value) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        return Float.parseFloat(df.format(value));
     }
 }
