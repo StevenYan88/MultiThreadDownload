@@ -57,8 +57,8 @@ public class DownloadRunnable implements Runnable {
         RandomAccessFile randomAccessFile = null;
         try {
             Response response = OkHttpManager.getInstance().syncResponse(url, start, end);
-            Log.i(TAG, "contentLength=" + response.body().contentLength()
-                    + "start=" + start + "end=" + end + "threadId=" + threadId);
+            Log.i(TAG, "fileName=" + name + " 每个线程负责下载文件大小contentLength=" + response.body().contentLength()
+                    + " 开始位置start=" + start + "结束位置end=" + end + " threadId=" + threadId);
             inputStream = response.body().byteStream();
             //保存文件的路径
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), name);
