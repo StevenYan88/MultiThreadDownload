@@ -36,6 +36,7 @@ public class OkHttpManager {
     public Response syncResponse(String url, long start, long end) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
+                //Range 请求头格式Range: bytes=start-end
                 .addHeader("Range", "bytes=" + start + "-" + end)
                 .build();
         return okHttpClient.newCall(request).execute();

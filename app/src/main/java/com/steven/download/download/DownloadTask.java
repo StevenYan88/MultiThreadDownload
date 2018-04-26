@@ -20,7 +20,7 @@ public class DownloadTask {
     private long mContentLength;
     //下载文件的线程的个数
     private int mThreadSize;
-    //线程下载成功的个数
+    //线程下载成功的个数,变量加个volatile，多线程保证变量可见性
     private volatile int mSuccessNumber;
     //总进度=每个线程的进度的和
     private long mTotalProgress;
