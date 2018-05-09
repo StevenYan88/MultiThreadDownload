@@ -101,6 +101,19 @@ public class DownloadDispatcher {
         });
     }
 
+    /**
+     * 根据url 去暂停那个
+     *
+     * @param url
+     */
+    public void stopDownLoad(String url) {
+        //这个停止是不是这个正在下载的
+        for (DownloadTask runningTask : runningTasks) {
+            if (runningTask.getUrl().equals(url)) {
+                runningTask.stopDownload();
+            }
+        }
+    }
 
     /**
      * @param downLoadTask 下载任务
@@ -111,7 +124,5 @@ public class DownloadDispatcher {
         //readyTasks.
     }
 
-    public void stopDownLoad(String url) {
-        //这个停止是不是这个正在下载的
-    }
+
 }

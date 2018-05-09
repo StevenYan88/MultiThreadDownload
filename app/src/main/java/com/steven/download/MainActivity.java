@@ -34,8 +34,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mQQpb = findViewById(R.id.qq_pb);
+        mQQpb.setTag("downloading");
         mWeChatPb = findViewById(R.id.wechat_pb);
+        mWeChatPb.setTag("downloading");
         mQzonePb = findViewById(R.id.qzone_pb);
+        mQzonePb.setTag("downloading");
         mQQpb.setOnClickListener(this);
         mWeChatPb.setOnClickListener(this);
         mQzonePb.setOnClickListener(this);
@@ -61,50 +64,84 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.qq_pb:
-                DownloadDispatcher.getInstance().startDownload(names[0], url[0], new DownloadCallback() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.i(TAG, "onFailure: 多线程下载失败");
-                    }
+                if (mQQpb.getTag().equals("downloading")) {
+                    mQQpb.setTag("stop");
+                    DownloadDispatcher.getInstance().startDownload(names[0], url[0], new DownloadCallback() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.i(TAG, "onFailure: 多线程下载失败");
+                        }
 
-                    @Override
-                    public void onSuccess(File file) {
-                        Log.i(TAG, "onSuccess:多线程下载成功 " + file.getAbsolutePath());
-                    }
+                        @Override
+                        public void onSuccess(File file) {
+                            Log.i(TAG, "onSuccess:多线程下载成功 " + file.getAbsolutePath());
+                        }
 
-                    @Override
-                    public void onProgress(final long totalProgress, final long currentLength) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mQQpb.setCurrentProgress(Utils.keepTwoBit((float) totalProgress / currentLength));
-                            }
-                        });
-                    }
-                });
+                        @Override
+                        public void onProgress(final long totalProgress, final long currentLength) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mQQpb.setCurrentProgress(Utils.keepTwoBit(( float ) totalProgress / currentLength));
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onPause(long progress, long currentLength) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, names[0] + "暂停下载", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                } else if (mQQpb.getTag().equals("stop")) {
+                    mQQpb.setTag("downloading");
+                    DownloadDispatcher.getInstance().stopDownLoad(url[0]);
+                    mQQpb.setText("继续");
+                }
                 break;
             case R.id.wechat_pb:
-                DownloadDispatcher.getInstance().startDownload(names[1], url[1], new DownloadCallback() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.i("DownLoadActivity", "onFailure: 多线程下载失败");
-                    }
+                if (mWeChatPb.getTag().equals("downloading")) {
+                    mWeChatPb.setTag("stop");
+                    DownloadDispatcher.getInstance().startDownload(names[1], url[1], new DownloadCallback() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.i("DownLoadActivity", "onFailure: 多线程下载失败");
+                        }
 
-                    @Override
-                    public void onSuccess(File file) {
-                        Log.i("DownLoadActivity", "onSuccess:多线程下载成功 " + file.getAbsolutePath());
-                    }
+                        @Override
+                        public void onSuccess(File file) {
+                            Log.i("DownLoadActivity", "onSuccess:多线程下载成功 " + file.getAbsolutePath());
+                        }
 
-                    @Override
-                    public void onProgress(final long totalProgress, final long currentLength) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mWeChatPb.setCurrentProgress(Utils.keepTwoBit((float) totalProgress / currentLength));
-                            }
-                        });
-                    }
-                });
+                        @Override
+                        public void onProgress(final long totalProgress, final long currentLength) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mWeChatPb.setCurrentProgress(Utils.keepTwoBit(( float ) totalProgress / currentLength));
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onPause(long progress, long currentLength) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, names[1] + "暂停下载", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                } else if (mWeChatPb.getTag().equals("stop")) {
+                    mWeChatPb.setTag("downloading");
+                    DownloadDispatcher.getInstance().stopDownLoad(url[1]);
+                    mWeChatPb.setText("继续");
+                }
                 break;
             case R.id.qzone_pb:
                 DownloadDispatcher.getInstance().startDownload(names[2], url[2], new DownloadCallback() {
@@ -123,9 +160,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mQzonePb.setCurrentProgress(Utils.keepTwoBit((float) totalProgress / currentLength));
+                                mQzonePb.setCurrentProgress(Utils.keepTwoBit(( float ) totalProgress / currentLength));
                             }
                         });
+                    }
+
+                    @Override
+                    public void onPause(long progress, long currentLength) {
+
                     }
                 });
                 break;

@@ -30,6 +30,7 @@ public class CircleProgressbar extends View {
     private int mOutColor;
     private int mInnerCircleWidth;
     private int mOutCircleWidth;
+    private String text = "下载";
 
     public CircleProgressbar(Context context) {
         this(context, null);
@@ -44,8 +45,8 @@ public class CircleProgressbar extends View {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressbar);
         mInnerColor = typedArray.getColor(R.styleable.CircleProgressbar_innerCircleColor, ContextCompat.getColor(getContext(), R.color.colorPrimary));
         mOutColor = typedArray.getColor(R.styleable.CircleProgressbar_outCircleColor, ContextCompat.getColor(getContext(), R.color.colorAccent));
-        mInnerCircleWidth = (int) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
-        mOutCircleWidth = (int) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
+        mInnerCircleWidth = ( int ) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
+        mOutCircleWidth = ( int ) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
         typedArray.recycle();
         initPaint();
 
@@ -99,10 +100,6 @@ public class CircleProgressbar extends View {
      * @param canvas
      */
     private void drawText(Canvas canvas) {
-        String text = "下载";
-        if (mPercentProgress > 0) {
-            text = (int) (mPercentProgress * 100) + "%";
-        }
         Rect textBounds = new Rect();
         mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
         int dx = getWidth() / 2 - textBounds.width() / 2;
@@ -126,6 +123,14 @@ public class CircleProgressbar extends View {
 
     public synchronized void setCurrentProgress(float currentProgress) {
         this.mPercentProgress = currentProgress;
+        if (mPercentProgress > 0) {
+            text = ( int ) (mPercentProgress * 100) + "%";
+        }
+        invalidate();
+    }
+
+    public synchronized void setText(String text) {
+        this.text = text;
         invalidate();
     }
 }

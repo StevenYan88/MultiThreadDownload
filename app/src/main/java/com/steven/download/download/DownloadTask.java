@@ -77,6 +77,11 @@ public class DownloadTask {
                         mDownloadCallback.onProgress(mTotalProgress, currentLength);
                     }
                 }
+
+                @Override
+                public void onPause(long progress, long currentLength) {
+                    mDownloadCallback.onPause(progress,currentLength);
+                }
             });
             //通过线程池去执行
             DownloadDispatcher.getInstance().executorService().execute(downloadRunnable);
@@ -91,5 +96,9 @@ public class DownloadTask {
         for (DownloadRunnable runnable : mDownloadRunnables) {
             runnable.stop();
         }
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

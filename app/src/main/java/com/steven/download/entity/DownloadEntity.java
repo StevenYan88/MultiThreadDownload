@@ -1,4 +1,4 @@
-package zhiwenyan.cmccaifu.com.android2017.okhttp.download.db;
+package com.steven.download.entity;
 
 /**
  * Description:
@@ -15,16 +15,28 @@ public class DownloadEntity {
 
     private int threadId;
 
-    private long progroess;
+    private long progress;
 
     private long contentLength;
 
-    public DownloadEntity(String url, long start, long end, int threadId, long progroess, long contentLength) {
+    public DownloadEntity(String url, long start, long end, int threadId, long progress, long contentLength) {
         this.url = url;
         this.start = start;
         this.end = end;
         this.threadId = threadId;
-        this.progroess = progroess;
+        this.progress = progress;
         this.contentLength = contentLength;
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadEntity{" +
+                "url='" + url + '\'' +
+                ", start=" + start +
+                ", end=" + end +
+                ", threadId=" + threadId +
+                ", progress=" + progress +
+                ", contentLength=" + contentLength +
+                '}';
     }
 }

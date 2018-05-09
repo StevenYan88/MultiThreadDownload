@@ -68,8 +68,10 @@ public class DownloadRunnable implements Runnable {
             int length;
             byte[] bytes = new byte[10 * 1024];
             while ((length = inputStream.read(bytes)) != -1) {
-                if (mStatus == STATUS_STOP)
+                if (mStatus == STATUS_STOP) {
+                    downloadCallback.onPause(length, mCurrentLength);
                     break;
+                }
                 //写入
                 randomAccessFile.write(bytes, 0, length);
                 //保存下进度，做断点 todo
