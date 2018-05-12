@@ -28,17 +28,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CircleProgressbar mWeChatPb;
     private CircleProgressbar mQzonePb;
 
-    @Override
+    private static final String STATUS_DOWNLOADING = "downloading";
+    private static final String STATUS_STOP = "stop";
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mQQpb = findViewById(R.id.qq_pb);
-        mQQpb.setTag("downloading");
+        mQQpb.setTag(STATUS_DOWNLOADING);
         mWeChatPb = findViewById(R.id.wechat_pb);
-        mWeChatPb.setTag("downloading");
+        mWeChatPb.setTag(STATUS_DOWNLOADING);
         mQzonePb = findViewById(R.id.qzone_pb);
-        mQzonePb.setTag("downloading");
+        mQzonePb.setTag(STATUS_DOWNLOADING);
         mQQpb.setOnClickListener(this);
         mWeChatPb.setOnClickListener(this);
         mQzonePb.setOnClickListener(this);
@@ -64,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.qq_pb:
-                if (mQQpb.getTag().equals("downloading")) {
-                    mQQpb.setTag("stop");
+                if (mQQpb.getTag().equals(STATUS_DOWNLOADING)) {
+                    mQQpb.setTag(STATUS_STOP);
                     DownloadDispatcher.getInstance().startDownload(names[0], url[0], new DownloadCallback() {
                         @Override
                         public void onFailure(Exception e) {
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mQQpb.setCurrentProgress(Utils.keepTwoBit(( float ) totalProgress / currentLength));
+                                    mQQpb.setCurrentProgress(Utils.keepTwoBit((float) totalProgress / currentLength));
                                 }
                             });
                         }
@@ -97,15 +99,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             });
                         }
                     });
-                } else if (mQQpb.getTag().equals("stop")) {
-                    mQQpb.setTag("downloading");
+                } else if (mQQpb.getTag().equals(STATUS_STOP)) {
+                    mQQpb.setTag(STATUS_DOWNLOADING);
                     DownloadDispatcher.getInstance().stopDownLoad(url[0]);
                     mQQpb.setText("继续");
                 }
                 break;
             case R.id.wechat_pb:
-                if (mWeChatPb.getTag().equals("downloading")) {
-                    mWeChatPb.setTag("stop");
+                if (mWeChatPb.getTag().equals(STATUS_DOWNLOADING)) {
+                    mWeChatPb.setTag(STATUS_STOP);
                     DownloadDispatcher.getInstance().startDownload(names[1], url[1], new DownloadCallback() {
                         @Override
                         public void onFailure(Exception e) {
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mWeChatPb.setCurrentProgress(Utils.keepTwoBit(( float ) totalProgress / currentLength));
+                                    mWeChatPb.setCurrentProgress(Utils.keepTwoBit((float) totalProgress / currentLength));
                                 }
                             });
                         }
@@ -137,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             });
                         }
                     });
-                } else if (mWeChatPb.getTag().equals("stop")) {
-                    mWeChatPb.setTag("downloading");
+                } else if (mWeChatPb.getTag().equals(STATUS_STOP)) {
+                    mWeChatPb.setTag(STATUS_DOWNLOADING);
                     DownloadDispatcher.getInstance().stopDownLoad(url[1]);
                     mWeChatPb.setText("继续");
                 }
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mQzonePb.setCurrentProgress(Utils.keepTwoBit(( float ) totalProgress / currentLength));
+                                mQzonePb.setCurrentProgress(Utils.keepTwoBit((float) totalProgress / currentLength));
                             }
                         });
                     }
