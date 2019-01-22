@@ -1,5 +1,9 @@
 package com.steven.download.download;
 
+import android.util.Log;
+
+import com.steven.download.download.db.DownloadEntity;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +28,7 @@ public class DownloadTask {
     private volatile int mSuccessNumber;
     //总进度=每个线程的进度的和
     private long mTotalProgress;
+    //正在执行下载任务的runnable
     private List<DownloadRunnable> mDownloadRunnables;
     private DownloadCallback mDownloadCallback;
 
@@ -38,18 +43,26 @@ public class DownloadTask {
     }
 
     public void init() {
+        //每个线程的下载的大小threadSize
+        long threadSize = mContentLength / mThreadSize;
         for (int i = 0; i < mThreadSize; i++) {
             //初始化的时候，需要读取数据库
-            //每个线程的下载的大小threadSize
-            long threadSize = mContentLength / mThreadSize;
             //开始下载的位置
             long start = i * threadSize;
             //结束下载的位置
-            long end = start + threadSize - 1;
+            long end = start + threadSize;
             if (i == mThreadSize - 1) {
-                end = mContentLength - 1;
+                end = mContentLength ;
             }
-            DownloadRunnable downloadRunnable = new DownloadRunnable(name, url, mContentLength, i, start, end, new DownloadCallback() {
+
+            List<DownloadEntity> entities = DaoManagerHelper.getManager().queryAll(url);
+            DownloadEntity downloadEntity = getEntity(i, entities);
+            if (downloadEntity == null) {
+                downloadEntity = new DownloadEntity(start, end, url, i, 0, mContentLength);
+            }
+            Log.i(TAG, "init: 上次保存的进度progress=" + downloadEntity.getProgress());
+            DownloadRunnable downloadRunnable = new DownloadRunnable(name, url, mContentLength, i, start, end,
+                    downloadEntity.getProgress(), downloadEntity, new DownloadCallback() {
                 @Override
                 public void onFailure(Exception e) {
                     //有一个线程发生异常，下载失败，需要把其它线程停止掉
@@ -63,7 +76,8 @@ public class DownloadTask {
                     if (mSuccessNumber == mThreadSize) {
                         mDownloadCallback.onSuccess(file);
                         DownloadDispatcher.getInstance().recyclerTask(DownloadTask.this);
-                        //如果下载完毕，清除数据库  todo
+                        //如果下载完毕，清除数据库
+                        //DaoManagerHelper.getManager().remove(url);
                     }
                 }
 
@@ -73,20 +87,29 @@ public class DownloadTask {
                     //这里需要synchronized下
                     synchronized (DownloadTask.this) {
                         mTotalProgress = mTotalProgress + progress;
-                        //Log.i(TAG, "mTotalProgress==" + mTotalProgress);
                         mDownloadCallback.onProgress(mTotalProgress, currentLength);
                     }
                 }
 
                 @Override
                 public void onPause(long progress, long currentLength) {
-                    mDownloadCallback.onPause(progress,currentLength);
+                    mDownloadCallback.onPause(progress, currentLength);
                 }
             });
             //通过线程池去执行
             DownloadDispatcher.getInstance().executorService().execute(downloadRunnable);
             mDownloadRunnables.add(downloadRunnable);
         }
+    }
+
+
+    private DownloadEntity getEntity(int threadId, List<DownloadEntity> entities) {
+        for (DownloadEntity entity : entities) {
+            if (threadId == entity.getThreadId()) {
+                return entity;
+            }
+        }
+        return null;
     }
 
     /**

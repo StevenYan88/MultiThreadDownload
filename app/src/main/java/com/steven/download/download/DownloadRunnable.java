@@ -3,6 +3,7 @@ package com.steven.download.download;
 import android.os.Environment;
 import android.util.Log;
 
+import com.steven.download.download.db.DownloadEntity;
 import com.steven.download.okhttp.OkHttpManager;
 import com.steven.download.utils.Utils;
 
@@ -40,14 +41,19 @@ public class DownloadRunnable implements Runnable {
     //文件的总大小 content-length
     private long mCurrentLength;
     private DownloadCallback downloadCallback;
+    private DownloadEntity mDownloadEntity;
 
-    public DownloadRunnable(String name, String url, long currentLength, int threadId, long start, long end, DownloadCallback downloadCallback) {
+
+    public DownloadRunnable(String name, String url, long currentLength, int threadId, long start, long end,
+                            long progress, DownloadEntity downloadEntity, DownloadCallback downloadCallback) {
         this.name = name;
         this.url = url;
         this.mCurrentLength = currentLength;
         this.threadId = threadId;
         this.start = start;
         this.end = end;
+        this.mProgress = progress;
+        this.mDownloadEntity = downloadEntity;
         this.downloadCallback = downloadCallback;
     }
 
@@ -74,7 +80,6 @@ public class DownloadRunnable implements Runnable {
                 }
                 //写入
                 randomAccessFile.write(bytes, 0, length);
-                //保存下进度，做断点 todo
                 mProgress = mProgress + length;
                 //实时去更新下进度条，将每次写入的length传出去
                 downloadCallback.onProgress(length, mCurrentLength);
@@ -86,7 +91,11 @@ public class DownloadRunnable implements Runnable {
         } finally {
             Utils.close(inputStream);
             Utils.close(randomAccessFile);
-            //保存到数据库 怎么存？？ todo
+            Log.i(TAG, "**************保存到数据库*******************");
+            //保存到数据库
+            mDownloadEntity.setProgress(mProgress);
+            DaoManagerHelper.getManager().addEntity(mDownloadEntity);
+
         }
     }
 
