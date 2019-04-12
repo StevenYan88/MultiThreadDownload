@@ -15,6 +15,13 @@ public class DaoUtil {
         return clazz.getSimpleName();
     }
 
+    /**
+     *
+     * 将java数据类型转为sql对应的数据类型
+     *
+     * @param type 数据类型
+     * @return value
+     */
     public static String getColumnType(String type) {
         String value = null;
         if (type.contains("String")) {

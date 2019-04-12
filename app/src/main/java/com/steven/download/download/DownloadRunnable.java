@@ -63,8 +63,6 @@ public class DownloadRunnable implements Runnable {
         RandomAccessFile randomAccessFile = null;
         try {
             Response response = OkHttpManager.getInstance().syncResponse(url, start, end);
-            Log.i(TAG, "fileName=" + name + " 每个线程负责下载文件大小contentLength=" + response.body().contentLength()
-                    + " 开始位置start=" + start + "结束位置end=" + end + " threadId=" + threadId);
             inputStream = response.body().byteStream();
             //保存文件的路径
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), name);
@@ -80,21 +78,22 @@ public class DownloadRunnable implements Runnable {
                 }
                 //写入
                 randomAccessFile.write(bytes, 0, length);
-                mProgress = mProgress + length;
-                //实时去更新下进度条，将每次写入的length传出去
+                this.mProgress = this.mProgress + length;
+                Log.d(TAG, "run: mProgress=" + mProgress);
+                //实时去更新下进度条
                 downloadCallback.onProgress(length, mCurrentLength);
             }
-            downloadCallback.onSuccess(file);
+            if (mStatus != STATUS_STOP) {
+                downloadCallback.onSuccess(file);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             downloadCallback.onFailure(e);
         } finally {
             Utils.close(inputStream);
             Utils.close(randomAccessFile);
-            Log.i(TAG, "**************保存到数据库*******************");
             //保存到数据库
-            mDownloadEntity.setProgress(mProgress);
-            DaoManagerHelper.getManager().addEntity(mDownloadEntity);
+            saveToDb();
 
         }
     }
@@ -102,4 +101,18 @@ public class DownloadRunnable implements Runnable {
     public void stop() {
         mStatus = STATUS_STOP;
     }
+
+    private void saveToDb() {
+        Log.d(TAG, "**************保存到数据库*******************");
+        mDownloadEntity.setThreadId(threadId);
+        mDownloadEntity.setUrl(url);
+        mDownloadEntity.setStart(start);
+        mDownloadEntity.setEnd(end);
+        mDownloadEntity.setProgress(mProgress);
+        mDownloadEntity.setContentLength(mCurrentLength);
+
+        //保存到数据库
+        DaoManagerHelper.getManager().addEntity(mDownloadEntity);
+    }
+
 }

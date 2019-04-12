@@ -45,8 +45,8 @@ public class CircleProgressbar extends View {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressbar);
         mInnerColor = typedArray.getColor(R.styleable.CircleProgressbar_innerCircleColor, ContextCompat.getColor(getContext(), R.color.colorPrimary));
         mOutColor = typedArray.getColor(R.styleable.CircleProgressbar_outCircleColor, ContextCompat.getColor(getContext(), R.color.colorAccent));
-        mInnerCircleWidth = ( int ) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
-        mOutCircleWidth = ( int ) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
+        mInnerCircleWidth = (int) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
+        mOutCircleWidth = (int) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
         typedArray.recycle();
         initPaint();
 
@@ -89,9 +89,9 @@ public class CircleProgressbar extends View {
      * @param canvas
      */
     private void drawCircle(Canvas canvas) {
-        float cx = getWidth() / 2;
-        float cy = getHeight() / 2;
-        canvas.drawCircle(cx, cy, getWidth() / 2 - mOutCircleWidth / 2, mCirclePaint);
+        float cx = getWidth() >> 1;
+        float cy = getHeight() >> 1;
+        canvas.drawCircle(cx, cy, (getWidth() - mOutCircleWidth) >> 1, mCirclePaint);
     }
 
     /**
@@ -115,8 +115,8 @@ public class CircleProgressbar extends View {
      * @param canvas
      */
     private void drawArc(Canvas canvas) {
-        RectF rectF = new RectF(mOutCircleWidth / 2, mOutCircleWidth / 2,
-                getWidth() - mOutCircleWidth / 2, getHeight() - mOutCircleWidth / 2);
+        RectF rectF = new RectF(mOutCircleWidth >> 1, mOutCircleWidth >> 1,
+                getWidth() - (mOutCircleWidth >> 1), getHeight() - (mOutCircleWidth >> 1));
         float sweepAngle = mPercentProgress * 360;
         canvas.drawArc(rectF, 0, sweepAngle, false, mArcPaint);
     }
@@ -124,7 +124,7 @@ public class CircleProgressbar extends View {
     public synchronized void setCurrentProgress(float currentProgress) {
         this.mPercentProgress = currentProgress;
         if (mPercentProgress > 0) {
-            text = ( int ) (mPercentProgress * 100) + "%";
+            text = (int) (mPercentProgress * 100) + "%";
         }
         invalidate();
     }
@@ -132,5 +132,9 @@ public class CircleProgressbar extends View {
     public synchronized void setText(String text) {
         this.text = text;
         invalidate();
+    }
+
+    public synchronized String getText() {
+        return text;
     }
 }

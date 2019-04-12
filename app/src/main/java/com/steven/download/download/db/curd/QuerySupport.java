@@ -2,6 +2,7 @@ package com.steven.download.download.db.curd;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.steven.download.download.db.DaoUtil;
 
@@ -74,6 +75,7 @@ public class QuerySupport<T> {
     public List<T> query() {
         Cursor cursor = mSQLiteDatabase.query(DaoUtil.getTableName(mClass), mQueryColumns, mQuerySelection,
                 mQuerySelectionArgs, mQueryGroupBy, mQueryHaving, mQueryOrderBy, mQueryLimit);
+        Log.i("TAG", "query: " + mQuerySelectionArgs[0]);
         clearQueryParams();
         return cursorToList(cursor);
     }
@@ -98,11 +100,13 @@ public class QuerySupport<T> {
 
     /**
      * 通过Cursor封装成查找对象
+     *
      * @return 对象集合列表
      */
     private List<T> cursorToList(Cursor cursor) {
         List<T> list = new ArrayList<>();
-        if (cursor != null && cursor.moveToFirst()) {
+        Log.i("TAG", "cursorToList: " + cursor.getCount());
+        if (cursor.moveToFirst()) {
             do {
                 try {
                     T instance = mClass.newInstance();
@@ -144,14 +148,18 @@ public class QuerySupport<T> {
                             field.set(instance, value);
                         }
                     }
+                    Log.i("TAG", "cursorToList: " + instance);
                     // 加入集合
                     list.add(instance);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    Log.i("TAG", "cursorToList: " + e);
+
                 }
             } while (cursor.moveToNext());
         }
         cursor.close();
+
         return list;
     }
 

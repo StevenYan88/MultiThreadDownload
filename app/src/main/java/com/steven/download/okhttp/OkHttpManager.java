@@ -26,7 +26,6 @@ public class OkHttpManager {
     }
 
     public Call asyncCall(String url) {
-
         Request request = new Request.Builder()
                 .url(url)
                 .build();

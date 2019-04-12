@@ -24,7 +24,12 @@ public class DownloadFacade {
         DownloadDispatcher.getInstance().startDownload(url, name, callback);
     }
 
+    public void stopDownload(String url) {
+        DownloadDispatcher.getInstance().stopDownLoad(url);
+    }
+
+
     public void startDownload(String url) {
-      //  DownloadDispatcher.getInstance().startDownload(url);
+        //  DownloadDispatcher.getInstance().startDownload(url);
     }
 }
