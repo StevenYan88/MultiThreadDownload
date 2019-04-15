@@ -1,30 +1,31 @@
 package com.steven.download;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 
 import com.steven.download.download.DownloadFacade;
 import com.steven.download.utils.ToastUtil;
-import com.steven.download.utils.Utils;
-import com.steven.download.widget.recyclerView.LinearLayoutItemDecoration;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_CODE = 0x088;
-    private RecyclerView rv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rv = findViewById(R.id.rv);
         checkSelfPermission();
-        setupAdapter();
+        initView();
 
+    }
+
+    private void initView() {
+        findViewById(R.id.btn_single).setOnClickListener(v -> startActivity(new Intent(this, SingleDownloadActivity.class)));
+        findViewById(R.id.btn_list).setOnClickListener(v -> startActivity(new Intent(this, ListDownloadActivity.class)));
     }
 
     private void checkSelfPermission() {
@@ -38,11 +39,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupAdapter() {
-        AppAdapter adapter = new AppAdapter(this, Utils.generateApp(), R.layout.app_item);
-        rv.addItemDecoration(new LinearLayoutItemDecoration(this, R.drawable.linear_layout_item));
-        rv.setAdapter(adapter);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
