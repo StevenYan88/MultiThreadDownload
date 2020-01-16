@@ -32,7 +32,6 @@ public class DownloadTask {
     //正在执行下载任务的runnable
     private List<DownloadRunnable> mDownloadRunnables;
     private DownloadCallback mDownloadCallback;
-    private DownloadEntity downloadEntity;
 
     public DownloadTask(String name, String url, int threadSize, long contentLength, DownloadCallback callBack) {
         this.name = name;
@@ -56,7 +55,7 @@ public class DownloadTask {
             if (i == mThreadSize - 1) {
                 end = mContentLength;
             }
-            downloadEntity = getEntity(i, entities);
+            DownloadEntity downloadEntity = getEntity(i, entities);
             if (downloadEntity == null) {
                 downloadEntity = new DownloadEntity(start, end, url, i, 0, mContentLength);
             } else {
@@ -71,6 +70,7 @@ public class DownloadTask {
                     downloadEntity.getProgress(), downloadEntity, new DownloadCallback() {
                 @Override
                 public void onFailure(Exception e) {
+                    Log.e(TAG, "onFailure: "+e.getMessage());
                     //有一个线程发生异常，下载失败，需要把其它线程停止掉
                     mDownloadCallback.onFailure(e);
                     stopDownload();
@@ -107,6 +107,7 @@ public class DownloadTask {
             //通过线程池去执行
             DownloadDispatcher.getInstance().executorService().execute(downloadRunnable);
             mDownloadRunnables.add(downloadRunnable);
+
         }
     }
 

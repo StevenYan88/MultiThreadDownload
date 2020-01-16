@@ -1,5 +1,6 @@
 package com.steven.download;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.widget.ImageView;
@@ -24,9 +25,11 @@ import java.util.List;
  */
 public class AppAdapter extends CommonRecycleAdapter<AppEntity> {
     private static final String TAG = AppAdapter.class.getSimpleName();
+    private Context mContext;
 
     public AppAdapter(Context context, List<AppEntity> mDatas, int layoutId) {
         super(context, mDatas, layoutId);
+        this.mContext = context;
     }
 
     @Override
@@ -57,12 +60,15 @@ public class AppAdapter extends CommonRecycleAdapter<AppEntity> {
 
                     @Override
                     public void onProgress(long progress, long currentLength) {
-                        progressbar.setCurrentProgress(Utils.keepTwoBit((float) progress / currentLength));
+                        Activity activity = (Activity) mContext;
+                        activity.runOnUiThread(() -> progressbar.setCurrentProgress(Utils.keepTwoBit((float) progress / currentLength)));
+
                     }
 
                     @Override
                     public void onPause(long progress, long currentLength) {
-                        progressbar.setText("继续");
+                        Activity activity = (Activity) mContext;
+                        activity.runOnUiThread(() -> progressbar.setText("继续"));
                     }
                 });
             } else {

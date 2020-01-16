@@ -74,6 +74,7 @@ public class DownloadRunnable implements Runnable {
             while ((length = inputStream.read(bytes)) != -1) {
                 if (mStatus == STATUS_STOP) {
                     downloadCallback.onPause(length, mCurrentLength);
+                    saveToDb();
                     break;
                 }
                 //写入
@@ -104,13 +105,12 @@ public class DownloadRunnable implements Runnable {
 
     private void saveToDb() {
         Log.d(TAG, "**************保存到数据库*******************");
+        mDownloadEntity.setContentLength(mCurrentLength);
         mDownloadEntity.setThreadId(threadId);
         mDownloadEntity.setUrl(url);
         mDownloadEntity.setStart(start);
         mDownloadEntity.setEnd(end);
         mDownloadEntity.setProgress(mProgress);
-        mDownloadEntity.setContentLength(mCurrentLength);
-
         //保存到数据库
         DaoManagerHelper.getManager().addEntity(mDownloadEntity);
     }

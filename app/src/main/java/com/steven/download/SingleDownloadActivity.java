@@ -53,12 +53,12 @@ public class SingleDownloadActivity extends AppCompatActivity {
 
                     @Override
                     public void onProgress(long progress, long currentLength) {
-                        circleProgressbar.setCurrentProgress(Utils.keepTwoBit((float) progress / currentLength));
+                        runOnUiThread(() -> circleProgressbar.setCurrentProgress(Utils.keepTwoBit((float) progress / currentLength)));
                     }
 
                     @Override
                     public void onPause(long progress, long currentLength) {
-                        circleProgressbar.setText("继续");
+                        runOnUiThread(() -> circleProgressbar.setText("继续"));
                     }
                 });
             } else {
