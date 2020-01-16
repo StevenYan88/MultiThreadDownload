@@ -74,7 +74,6 @@ public class DownloadRunnable implements Runnable {
             while ((length = inputStream.read(bytes)) != -1) {
                 if (mStatus == STATUS_STOP) {
                     downloadCallback.onPause(length, mCurrentLength);
-                    saveToDb();
                     break;
                 }
                 //写入
