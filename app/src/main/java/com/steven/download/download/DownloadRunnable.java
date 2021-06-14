@@ -109,13 +109,12 @@ public class DownloadRunnable implements Runnable {
 
     private void saveToDb() {
         Log.d(TAG, "**************保存到数据库*******************");
+        mDownloadEntity.setContentLength(mCurrentLength);
         mDownloadEntity.setThreadId(threadId);
         mDownloadEntity.setUrl(url);
         mDownloadEntity.setStart(start);
         mDownloadEntity.setEnd(end);
         mDownloadEntity.setProgress(mProgress);
-        mDownloadEntity.setContentLength(mCurrentLength);
-
         //保存到数据库
         DaoManagerHelper.getManager().addEntity(mDownloadEntity);
     }

@@ -3,9 +3,9 @@ package com.steven.download.download.db;
 
 public class DownloadEntity {
 
-    private long mStart;
+    private long start;
 
-    private long mEnd;
+    private long end;
 
     private String url;
 
@@ -15,18 +15,18 @@ public class DownloadEntity {
 
     private long contentLength;
 
-    public DownloadEntity(long mStart, long mEnd,String url,
-            int threadId, long progress, long contentLength) {
-        this.mStart = mStart;
-        this.mEnd = mEnd;
+    public DownloadEntity(long start, long end, String url, int threadId, long progress, long contentLength) {
+        this.start = start;
+        this.end = end;
         this.url = url;
         this.threadId = threadId;
         this.progress = progress;
         this.contentLength = contentLength;
     }
 
-    public DownloadEntity(){}
+    public DownloadEntity(){
 
+    }
     public long getProgress() {
         return progress;
     }
@@ -35,20 +35,9 @@ public class DownloadEntity {
         this.progress = progress;
     }
 
-    public long getStart() {
-        return mStart;
-    }
 
-    public void setStart(long mStart) {
-        this.mStart = mStart;
-    }
-
-    public long getEnd() {
-        return mEnd;
-    }
-
-    public void setEnd(long mEnd) {
-        this.mEnd = mEnd;
+    public void setEnd(long end) {
+        this.end = end;
     }
 
     public String getUrl() {
@@ -67,20 +56,17 @@ public class DownloadEntity {
         this.threadId = threadId;
     }
 
-    public long getMStart() {
-        return this.mStart;
+    public void setStart(long start) {
+        this.start = start;
     }
 
-    public void setMStart(long mStart) {
-        this.mStart = mStart;
+    public long getStart() {
+        return start;
     }
 
-    public long getMEnd() {
-        return this.mEnd;
-    }
 
-    public void setMEnd(long mEnd) {
-        this.mEnd = mEnd;
+    public long getEnd() {
+        return end;
     }
 
     public long getContentLength() {
@@ -94,8 +80,8 @@ public class DownloadEntity {
     @Override
     public String toString() {
         return "DownloadEntity{" +
-                "mStart=" + mStart +
-                ", mEnd=" + mEnd +
+                "start=" + start +
+                ", end=" + end +
                 ", url='" + url + '\'' +
                 ", threadId=" + threadId +
                 ", progress=" + progress +

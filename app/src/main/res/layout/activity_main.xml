@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rv"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-    tools:context=".MainActivity"
-    tools:listitem="@layout/app_item">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
 
-</android.support.v7.widget.RecyclerView>
+    <Button
+        android:id="@+id/btn_single"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="单个文件下载" />
+
+    <Button
+        android:id="@+id/btn_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="多个文件下载（列表形式）" />
+
+
+</LinearLayout>

@@ -1,7 +1,5 @@
 package com.steven.download.download;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.steven.download.download.db.DownloadEntity;
@@ -9,6 +7,7 @@ import com.steven.download.download.db.DownloadEntity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Description:每个apk的下载，这个类需要复用的
@@ -26,15 +25,13 @@ public class DownloadTask {
     private long mContentLength;
     //下载文件的线程的个数
     private int mThreadSize;
-    //线程下载成功的个数,变量加个volatile，多线程保证变量可见性
-    private volatile int mSuccessNumber;
+    //线程下载成功的个数，AtomicInteger
+    private AtomicInteger mSuccessNumber = new AtomicInteger();
     //总进度=每个线程的进度的和
     private long mTotalProgress;
     //正在执行下载任务的runnable
     private List<DownloadRunnable> mDownloadRunnables;
     private DownloadCallback mDownloadCallback;
-    private DownloadEntity downloadEntity;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     public DownloadTask(String name, String url, int threadSize, long contentLength, DownloadCallback callBack) {
         this.name = name;
@@ -58,7 +55,7 @@ public class DownloadTask {
             if (i == mThreadSize - 1) {
                 end = mContentLength;
             }
-            downloadEntity = getEntity(i, entities);
+            DownloadEntity downloadEntity = getEntity(i, entities);
             if (downloadEntity == null) {
                 downloadEntity = new DownloadEntity(start, end, url, i, 0, mContentLength);
             } else {
@@ -66,23 +63,24 @@ public class DownloadTask {
                 start = start + downloadEntity.getProgress();
             }
             if (threadSize == downloadEntity.getProgress()) {
-                mSuccessNumber = mSuccessNumber + 1;
+                mSuccessNumber.incrementAndGet();
                 return;
             }
             DownloadRunnable downloadRunnable = new DownloadRunnable(name, url, mContentLength, i, start, end,
                     downloadEntity.getProgress(), downloadEntity, new DownloadCallback() {
                 @Override
                 public void onFailure(Exception e) {
+                    Log.e(TAG, "onFailure: "+e.getMessage());
                     //有一个线程发生异常，下载失败，需要把其它线程停止掉
-                    mHandler.post(() -> mDownloadCallback.onFailure(e));
+                    mDownloadCallback.onFailure(e);
                     stopDownload();
                 }
 
                 @Override
                 public void onSuccess(File file) {
-                    mSuccessNumber = mSuccessNumber + 1;
-                    if (mSuccessNumber == mThreadSize) {
-                        mHandler.post(() -> mDownloadCallback.onSuccess(file));
+                    mSuccessNumber.incrementAndGet();
+                    if (mSuccessNumber.get() == mThreadSize) {
+                        mDownloadCallback.onSuccess(file);
                         DownloadDispatcher.getInstance().recyclerTask(DownloadTask.this);
                         //如果下载完毕，清除数据库
                         DaoManagerHelper.getManager().remove(url);
@@ -96,19 +94,20 @@ public class DownloadTask {
                     synchronized (DownloadTask.this) {
                         mTotalProgress = mTotalProgress + progress;
                         Log.d(TAG, "onProgress: mTotalProgress" + mTotalProgress);
-                        mHandler.post(() -> mDownloadCallback.onProgress(mTotalProgress, currentLength));
+                        mDownloadCallback.onProgress(mTotalProgress, currentLength);
                     }
                 }
 
                 @Override
                 public void onPause(long progress, long currentLength) {
-                    mHandler.post(() -> mDownloadCallback.onPause(mTotalProgress, currentLength));
+                    mDownloadCallback.onPause(mTotalProgress, currentLength);
 
                 }
             });
             //通过线程池去执行
             DownloadDispatcher.getInstance().executorService().execute(downloadRunnable);
             mDownloadRunnables.add(downloadRunnable);
+
         }
     }
 
