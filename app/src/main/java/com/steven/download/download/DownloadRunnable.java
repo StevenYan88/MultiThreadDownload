@@ -64,6 +64,8 @@ public class DownloadRunnable implements Runnable {
         try {
             Response response = OkHttpManager.getInstance().syncResponse(url, start, end);
             inputStream = response.body().byteStream();
+            long contentLength = response.body().contentLength();
+            Log.d(TAG, "start：" + start + ",end:" + end + "contentLength:" + contentLength);
             //保存文件的路径
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), name);
             randomAccessFile = new RandomAccessFile(file, "rwd");
@@ -79,13 +81,16 @@ public class DownloadRunnable implements Runnable {
                 //写入
                 randomAccessFile.write(bytes, 0, length);
                 this.mProgress = this.mProgress + length;
-                Log.d(TAG, "run: mProgress=" + mProgress);
                 //实时去更新下进度条
                 downloadCallback.onProgress(length, mCurrentLength);
+                if (this.mProgress == contentLength) {
+                    Log.d(TAG, file.getName() + threadId + "下载成功");
+                    downloadCallback.onSuccess(file);
+                }
             }
-            if (mStatus != STATUS_STOP) {
-                downloadCallback.onSuccess(file);
-            }
+//            if (mStatus != STATUS_STOP) {
+//                downloadCallback.onSuccess(file);
+//            }
         } catch (IOException e) {
             e.printStackTrace();
             downloadCallback.onFailure(e);

@@ -40,32 +40,39 @@ public class AppAdapter extends CommonRecycleAdapter<AppEntity> {
                 .setText(R.id.downloadCount, "下载次数:" + appEntity.downLoadCount);
         CircleProgressbar progressbar = holder.getView(R.id.pb);
         progressbar.setOnClickListener(v -> {
-            System.out.println("progressbar=" + progressbar);
-            if (progressbar.getText().equals("继续") || progressbar.getText().equals("下载")) {
+            if (appEntity.downloadStatus == DownloadStatus.IDLE
+                    || appEntity.downloadStatus == DownloadStatus.PAUSE
+                    || appEntity.downloadStatus == DownloadStatus.FAIL) {
                 DownloadFacade.getFacade().startDownload(appEntity.url, appEntity.name, new DownloadCallback() {
                     @Override
                     public void onSuccess(File file) {
+                        appEntity.downloadStatus = DownloadStatus.SUCCESS;
+                        progressbar.setText("成功");
                         Log.d(TAG, file.getName() + "下载成功");
 
                     }
 
                     @Override
                     public void onFailure(Exception e) {
+                        appEntity.downloadStatus = DownloadStatus.FAIL;
+                        progressbar.setText("失败");
                         Log.d(TAG, "下载失败" + e.getMessage());
 
                     }
 
                     @Override
                     public void onProgress(long progress, long currentLength) {
+                        appEntity.downloadStatus = DownloadStatus.DOWNLOADING;
                         progressbar.setCurrentProgress(Utils.keepTwoBit((float) progress / currentLength));
                     }
 
                     @Override
                     public void onPause(long progress, long currentLength) {
+                        appEntity.downloadStatus = DownloadStatus.PAUSE;
                         progressbar.setText("继续");
                     }
                 });
-            } else {
+            } else if (appEntity.downloadStatus == DownloadStatus.DOWNLOADING) {
                 DownloadFacade.getFacade().stopDownload(appEntity.url);
             }
         });

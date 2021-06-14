@@ -68,27 +68,21 @@ public class Utils {
         return Float.parseFloat(df.format(value));
     }
 
-    private static final String[] url = {"http://gdown.baidu.com/data/wisegame/27317dce71dedfbd/QQ_1010.apk",
-            "http://gdown.baidu.com/data/wisegame/43b4382f3c757ebe/weixin_1400.apk",
-            "http://gdown.baidu.com/data/wisegame/83cef7aa20d60c3f/zhifubao_140.apk",
-            "http://gdown.baidu.com/data/wisegame/a4c4efefb730727b/jinritoutiao_720.apk",
-            "http://gdown.baidu.com/data/wisegame/0ed27a50d8e7f531/douyinduanshipin_580.apk",
-            "http://gdown.baidu.com/data/wisegame/ff4efd277de65cb8/weibo_3854.apk"};
+    private static final String[] url = {"https://imtt.dd.qq.com/16891/apk/1962EE9CFA69AC65231F488F9B978B69.apk?fsname=com.tencent.mobileqq_8.8.0_1792.apk",
+            "https://imtt.dd.qq.com/16891/apk/5C0FF221A948463BCF9F3255E0112034.apk?fsname=com.tencent.mm_8.0.6_1900.apk&csr=1bbd",
+            "https://imtt.dd.qq.com/16891/apk/8B91D1C0FFFAE9EB75427B2A02FF82D2.apk?fsname=com.eg.android.AlipayGphone_10.2.23.7100_400.apk&csr=1bbd"};
 
 
     private static final String[] appIcons = {"http://e.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=a96dced3a151f3dec3e7b163a6c2c72d/30adcbef76094b3698d41df4adcc7cd98d109d60.jpg",
             "http://d.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=6c5fcff6c5fcc3ceb495c134a069e1ba/810a19d8bc3eb13518b5f46fab1ea8d3fc1f44f7.jpg",
-            "http://d.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=279aea97adcc7cd9fa783cde0b2d160d/d439b6003af33a876265f160c85c10385343b544.jpg",
-            "http://e.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=04e122514f34970a47261828a7e6e6fa/3b292df5e0fe99251003832e3aa85edf8db17145.jpg",
-            "http://d.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=545196328b35e5dd9079add844ea90dd/0dd7912397dda144b6a71ad2bcb7d0a20cf48627.jpg",
-            "http://g.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=2f4924e7c311728b30788425fad0f4fc/9d82d158ccbf6c817e43879eb23eb13533fa4054.jpg"};
+            "http://d.hiphotos.bdimg.com/wisegame/wh%3D72%2C72/sign=279aea97adcc7cd9fa783cde0b2d160d/d439b6003af33a876265f160c85c10385343b544.jpg"};
 
 
-    private static final String[] versions = {"7.9.9", "7.0.3", "10.1.60.8966", " 7.2.0", "5.8.0", "9.4.0"};
-    private static final String[] sizes = {"57.6MB", "104.98MB", "64.4MB", "29.9MB", "72.5MB", "77.2MB"};
-    private static final String[] downLoadCounts = {"27.7亿", "34.3亿", "7.1亿", " 6.3亿", "3142万", "7亿"};
+    private static final String[] versions = {"8.8.0", "8.0.6", "10.2.23.7100"};
+    private static final String[] sizes = {"113.79MB", "190.69MB", "95.54MB"};
+    private static final String[] downLoadCounts = {"27.7亿", "34.3亿", "7.1亿"};
 
-    private static final String[] names = {"QQ", "微信", "支付宝", "今日头条", "抖音", "新浪微博"};
+    private static final String[] names = {"QQ", "微信", "支付宝"};
 
 
     public static List<AppEntity> generateApp() {
