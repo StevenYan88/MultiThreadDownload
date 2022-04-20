@@ -5,8 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity
-public
-class DownloadEntity {
+public class DownloadEntity {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -23,15 +22,6 @@ class DownloadEntity {
 
     private long contentLength;
 
-    public DownloadEntity(int id, long start, long end, String url, int threadId, long progress, long contentLength) {
-        this.id = id;
-        this.start = start;
-        this.end = end;
-        this.url = url;
-        this.threadId = threadId;
-        this.progress = progress;
-        this.contentLength = contentLength;
-    }
 
     public DownloadEntity(long start, long end, String url, int threadId, long progress, long contentLength) {
         this.start = start;
