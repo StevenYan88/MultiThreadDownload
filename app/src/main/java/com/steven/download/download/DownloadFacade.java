@@ -2,7 +2,10 @@ package com.steven.download.download;
 
 import android.content.Context;
 
+import com.steven.download.entity.DownloadEntity;
 import com.steven.download.utils.FileManager;
+
+import java.util.List;
 
 
 public class DownloadFacade {

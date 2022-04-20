@@ -1,10 +1,10 @@
-package com.steven.download.download.db.curd;
+package com.steven.download.db.curd;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.steven.download.download.db.DaoUtil;
+import com.steven.download.db.DaoUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -1,7 +1,15 @@
-package com.steven.download.download.db;
+package com.steven.download.entity;
 
 
-public class DownloadEntity {
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+@Entity
+public
+class DownloadEntity {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
     private long start;
 
@@ -15,6 +23,16 @@ public class DownloadEntity {
 
     private long contentLength;
 
+    public DownloadEntity(int id, long start, long end, String url, int threadId, long progress, long contentLength) {
+        this.id = id;
+        this.start = start;
+        this.end = end;
+        this.url = url;
+        this.threadId = threadId;
+        this.progress = progress;
+        this.contentLength = contentLength;
+    }
+
     public DownloadEntity(long start, long end, String url, int threadId, long progress, long contentLength) {
         this.start = start;
         this.end = end;
@@ -24,9 +42,10 @@ public class DownloadEntity {
         this.contentLength = contentLength;
     }
 
-    public DownloadEntity(){
+    public DownloadEntity() {
 
     }
+
     public long getProgress() {
         return progress;
     }
@@ -35,6 +54,13 @@ public class DownloadEntity {
         this.progress = progress;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public void setEnd(long end) {
         this.end = end;

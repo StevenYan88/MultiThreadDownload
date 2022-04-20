@@ -8,6 +8,7 @@ import com.steven.download.okhttp.OkHttpManager;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,6 +36,7 @@ public class DownloadDispatcher {
     //private final Deque<DownloadTask> readyTasks = new ArrayDeque<>();
     private final Deque<DownloadTask> runningTasks = new ArrayDeque<>();
     //private final Deque<DownloadTask> stopTasks = new ArrayDeque<>();
+
     private DownloadTask downloadTask;
 
     private DownloadDispatcher() {
@@ -60,10 +62,10 @@ public class DownloadDispatcher {
         if (mExecutorService == null) {
             mExecutorService = new ThreadPoolExecutor(CORE_POOL_SIZE, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
                     new SynchronousQueue<>(), r -> {
-                        Thread thread = new Thread(r);
-                        thread.setDaemon(false);
-                        return thread;
-                    });
+                Thread thread = new Thread(r);
+                thread.setDaemon(false);
+                return thread;
+            });
         }
         return mExecutorService;
     }
@@ -75,6 +77,7 @@ public class DownloadDispatcher {
      * @param callBack 回调接口
      */
     public void startDownload(final String url, final String name, final DownloadCallback callBack) {
+        Log.d(TAG, "开始下载：" + name);
         Call call = OkHttpManager.getInstance().asyncCall(url);
         call.enqueue(new Callback() {
             @Override
@@ -90,9 +93,7 @@ public class DownloadDispatcher {
                 if (contentLength <= -1) {
                     return;
                 }
-                if (downloadTask == null) {
-                    downloadTask = new DownloadTask(name, url, THREAD_SIZE, contentLength, callBack);
-                }
+                downloadTask = new DownloadTask(name, url, THREAD_SIZE, contentLength, callBack);
                 downloadTask.init();
                 runningTasks.add(downloadTask);
             }
@@ -113,14 +114,8 @@ public class DownloadDispatcher {
         }
     }
 
-    /**
-     * @param downLoadTask 下载任务
-     */
-    public void recyclerTask(DownloadTask downLoadTask) {
-        runningTasks.remove(downLoadTask);
-        //参考OkHttp的Dispatcher()的源码
-        //readyTasks.
+    public void recyclerTask() {
+        runningTasks.remove(downloadTask);
+        downloadTask = null;
     }
-
-
 }

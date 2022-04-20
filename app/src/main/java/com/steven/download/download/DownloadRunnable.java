@@ -3,7 +3,7 @@ package com.steven.download.download;
 import android.os.Environment;
 import android.util.Log;
 
-import com.steven.download.download.db.DownloadEntity;
+import com.steven.download.entity.DownloadEntity;
 import com.steven.download.okhttp.OkHttpManager;
 import com.steven.download.utils.Utils;
 
@@ -27,33 +27,33 @@ public class DownloadRunnable implements Runnable {
     //线程的状态
     private int mStatus = STATUS_DOWNLOADING;
     //文件下载的url
-    private String url;
+    private final String url;
     //文件的名称
-    private String name;
+    private final String name;
     //线程id
-    private int threadId;
+    private final int threadId;
     //每个线程下载开始的位置
-    private long start;
+    private final long start;
     //每个线程下载结束的位置
-    private long end;
+    private final long end;
     //每个线程的下载进度
-    private long mProgress;
+    private long progress;
     //文件的总大小 content-length
-    private long mCurrentLength;
-    private DownloadCallback downloadCallback;
-    private DownloadEntity mDownloadEntity;
+    private final long currentLength;
+    private final DownloadCallback downloadCallback;
+    private final DownloadEntity downloadEntity;
 
 
     public DownloadRunnable(String name, String url, long currentLength, int threadId, long start, long end,
                             long progress, DownloadEntity downloadEntity, DownloadCallback downloadCallback) {
         this.name = name;
         this.url = url;
-        this.mCurrentLength = currentLength;
+        this.currentLength = currentLength;
         this.threadId = threadId;
         this.start = start;
         this.end = end;
-        this.mProgress = progress;
-        this.mDownloadEntity = downloadEntity;
+        this.progress = progress;
+        this.downloadEntity = downloadEntity;
         this.downloadCallback = downloadCallback;
     }
 
@@ -65,7 +65,7 @@ public class DownloadRunnable implements Runnable {
             Response response = OkHttpManager.getInstance().syncResponse(url, start, end);
             inputStream = response.body().byteStream();
             long contentLength = response.body().contentLength();
-            Log.d(TAG, "start：" + start + ",end:" + end + "contentLength:" + contentLength);
+            Log.d(TAG, "start：" + start + ",end:" + end + "contentLength:" + contentLength + "progress =" + progress);
             //保存文件的路径
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), name);
             randomAccessFile = new RandomAccessFile(file, "rwd");
@@ -74,23 +74,20 @@ public class DownloadRunnable implements Runnable {
             int length;
             byte[] bytes = new byte[10 * 1024];
             while ((length = inputStream.read(bytes)) != -1) {
+                this.progress = this.progress + length;
                 if (mStatus == STATUS_STOP) {
-                    downloadCallback.onPause(length, mCurrentLength);
+                    downloadCallback.onPause(length, currentLength);
                     break;
                 }
                 //写入
                 randomAccessFile.write(bytes, 0, length);
-                this.mProgress = this.mProgress + length;
                 //实时去更新下进度条
-                downloadCallback.onProgress(length, mCurrentLength);
-                if (this.mProgress == contentLength) {
-                    Log.d(TAG, file.getName() + threadId + "下载成功");
-                    downloadCallback.onSuccess(file);
-                }
+                downloadCallback.onProgress(length, currentLength);
             }
-//            if (mStatus != STATUS_STOP) {
-//                downloadCallback.onSuccess(file);
-//            }
+            if (mStatus != STATUS_STOP) {
+                Log.d(TAG, file.getName() + "线程id--" + threadId + "下载完成");
+                downloadCallback.onSuccess(file);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             downloadCallback.onFailure(e);
@@ -98,8 +95,9 @@ public class DownloadRunnable implements Runnable {
             Utils.close(inputStream);
             Utils.close(randomAccessFile);
             //保存到数据库
-            saveToDb();
-
+            if (mStatus == STATUS_STOP) {
+                saveToDb();
+            }
         }
     }
 
@@ -109,14 +107,14 @@ public class DownloadRunnable implements Runnable {
 
     private void saveToDb() {
         Log.d(TAG, "**************保存到数据库*******************");
-        mDownloadEntity.setContentLength(mCurrentLength);
-        mDownloadEntity.setThreadId(threadId);
-        mDownloadEntity.setUrl(url);
-        mDownloadEntity.setStart(start);
-        mDownloadEntity.setEnd(end);
-        mDownloadEntity.setProgress(mProgress);
+        downloadEntity.setContentLength(currentLength);
+        downloadEntity.setThreadId(threadId);
+        downloadEntity.setUrl(url);
+        downloadEntity.setStart(start);
+        downloadEntity.setEnd(end);
+        downloadEntity.setProgress(progress);
         //保存到数据库
-        DaoManagerHelper.getManager().addEntity(mDownloadEntity);
+        DaoManagerHelper.getManager().addEntity(downloadEntity);
     }
 
 }

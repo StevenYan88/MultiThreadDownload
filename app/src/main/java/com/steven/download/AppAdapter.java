@@ -2,6 +2,7 @@ package com.steven.download;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +25,11 @@ import java.util.List;
  */
 public class AppAdapter extends CommonRecycleAdapter<AppEntity> {
     private static final String TAG = AppAdapter.class.getSimpleName();
+    private OnCircleProgressbarClickListener onCircleProgressbarClickListener;
+
+    public void setOnCircleProgressbarClickListener(OnCircleProgressbarClickListener onCircleProgressbarClickListener) {
+        this.onCircleProgressbarClickListener = onCircleProgressbarClickListener;
+    }
 
     public AppAdapter(Context context, List<AppEntity> mDatas, int layoutId) {
         super(context, mDatas, layoutId);
@@ -40,41 +46,12 @@ public class AppAdapter extends CommonRecycleAdapter<AppEntity> {
                 .setText(R.id.downloadCount, "下载次数:" + appEntity.downLoadCount);
         CircleProgressbar progressbar = holder.getView(R.id.pb);
         progressbar.setOnClickListener(v -> {
-            if (appEntity.downloadStatus == DownloadStatus.IDLE
-                    || appEntity.downloadStatus == DownloadStatus.PAUSE
-                    || appEntity.downloadStatus == DownloadStatus.FAIL) {
-                DownloadFacade.getFacade().startDownload(appEntity.url, appEntity.name, new DownloadCallback() {
-                    @Override
-                    public void onSuccess(File file) {
-                        appEntity.downloadStatus = DownloadStatus.SUCCESS;
-                        progressbar.setText("成功");
-                        Log.d(TAG, file.getName() + "下载成功");
-
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        appEntity.downloadStatus = DownloadStatus.FAIL;
-                        progressbar.setText("失败");
-                        Log.d(TAG, "下载失败" + e.getMessage());
-
-                    }
-
-                    @Override
-                    public void onProgress(long progress, long currentLength) {
-                        appEntity.downloadStatus = DownloadStatus.DOWNLOADING;
-                        progressbar.setCurrentProgress(Utils.keepTwoBit((float) progress / currentLength));
-                    }
-
-                    @Override
-                    public void onPause(long progress, long currentLength) {
-                        appEntity.downloadStatus = DownloadStatus.PAUSE;
-                        progressbar.setText("继续");
-                    }
-                });
-            } else if (appEntity.downloadStatus == DownloadStatus.DOWNLOADING) {
-                DownloadFacade.getFacade().stopDownload(appEntity.url);
-            }
+            Log.d(TAG, "progressbar = " + v);
+            onCircleProgressbarClickListener.onClick(v, appEntity);
         });
     }
+}
+
+interface OnCircleProgressbarClickListener {
+    void onClick(View view, AppEntity appEntity);
 }

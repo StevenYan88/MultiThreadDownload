@@ -1,4 +1,4 @@
-package com.steven.download.download.db;
+package com.steven.download.db;
 
 import android.text.TextUtils;
 

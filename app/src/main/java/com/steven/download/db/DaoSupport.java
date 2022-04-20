@@ -1,11 +1,11 @@
-package com.steven.download.download.db;
+package com.steven.download.db;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
-import com.steven.download.download.db.curd.QuerySupport;
+import com.steven.download.db.curd.QuerySupport;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

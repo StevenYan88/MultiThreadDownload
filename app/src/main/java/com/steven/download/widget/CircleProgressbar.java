@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.steven.download.R;
@@ -26,10 +27,10 @@ public class CircleProgressbar extends View {
     private Paint mTextPaint;
     private Paint mArcPaint;
     private float mPercentProgress;
-    private int mInnerColor;
-    private int mOutColor;
-    private int mInnerCircleWidth;
-    private int mOutCircleWidth;
+    private final int mInnerColor;
+    private final int mOutColor;
+    private final int mInnerCircleWidth;
+    private final int mOutCircleWidth;
     private String text = "下载";
 
     public CircleProgressbar(Context context) {
@@ -49,7 +50,6 @@ public class CircleProgressbar extends View {
         mOutCircleWidth = (int) typedArray.getDimension(R.styleable.CircleProgressbar_innerCircleWidth, DensityUtil.dip2px(getContext(), 2));
         typedArray.recycle();
         initPaint();
-
     }
 
     private void initPaint() {
@@ -73,7 +73,7 @@ public class CircleProgressbar extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
-        setMeasuredDimension(width > height ? height : width, width > height ? height : width);
+        setMeasuredDimension(Math.min(width, height), Math.min(width, height));
     }
 
     @Override
@@ -121,7 +121,7 @@ public class CircleProgressbar extends View {
         canvas.drawArc(rectF, 0, sweepAngle, false, mArcPaint);
     }
 
-    public synchronized void setCurrentProgress(float currentProgress) {
+    public void setCurrentProgress(float currentProgress) {
         this.mPercentProgress = currentProgress;
         if (mPercentProgress > 0) {
             text = (int) (mPercentProgress * 100) + "%";
@@ -129,12 +129,12 @@ public class CircleProgressbar extends View {
         invalidate();
     }
 
-    public synchronized void setText(String text) {
+    public void setText(String text) {
         this.text = text;
         invalidate();
     }
 
-    public synchronized String getText() {
+    public String getText() {
         return text;
     }
 }

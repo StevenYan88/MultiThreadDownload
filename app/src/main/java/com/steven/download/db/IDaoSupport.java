@@ -1,8 +1,8 @@
-package com.steven.download.download.db;
+package com.steven.download.db;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.steven.download.download.db.curd.QuerySupport;
+import com.steven.download.db.curd.QuerySupport;
 
 import java.util.List;
 
